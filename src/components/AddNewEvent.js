@@ -7,19 +7,32 @@ import { EditTextElement } from "./EditTextElement";
 
 const AddNewEvent = ({
   classes,
+  addEvent,
   setShowAddEventModal,
   showAddEventModal,
-  selectInfo,
 }) => {
   const [hasMadeChanges, setHasMadeChanges] = useState(false);
   const [formData, setFormData] = useState({
-    startdatum: "",
+    startdatum: showAddEventModal.startStr,
     starttid: "",
     sluttid: "",
     ledare: "",
+    allDay: false,
     sal: "",
   });
-  console.log(":", selectInfo);
+
+  useState(() => {
+    if (showAddEventModal) {
+      setFormData({
+        startdatum: showAddEventModal.startStr,
+        starttid: "",
+        sluttid: "",
+        ledare: "",
+        allDay: false,
+        sal: "",
+      });
+    }
+  }, [showAddEventModal]);
 
   const onChangeField = (field) => (event) => {
     setFormData({
@@ -30,30 +43,75 @@ const AddNewEvent = ({
       setHasMadeChanges(true);
     }
   };
+
+  const onClose = () => {
+    setFormData({
+      startdatum: showAddEventModal.startStr,
+      starttid: "",
+      sluttid: "",
+      ledare: "",
+      allDay: false,
+      sal: "",
+    });
+    setShowAddEventModal(false);
+  };
+
+  const onCreate = () => {
+    addEvent(formData, showAddEventModal);
+    setShowAddEventModal(false);
+  };
+
   return (
     <>
       {showAddEventModal && (
         <GustavModal
           dontAutoFocus
-          onCloseRequest={() => setShowAddEventModal(false)}
+          onCloseRequest={onClose}
           dontCloseOnClickOutside
         >
-          Skapa ny sammankomst - {selectInfo.startStr}
+          Skapa ny sammankomst - {showAddEventModal.startStr}
           <div className={classes.fieldContainer}>
-            <EditTextElement
-              value={formData.startdatum}
-              label="Startdatum"
-              placeholder="Startdatum"
-              name="startdatum"
-              handleEventChange={onChangeField("startdatum")}
-            />
+            <div className={classes.field}>
+              <EditTextElement
+                value={formData.startdatum}
+                label="Startdatum"
+                placeholder="Startdatum"
+                name="startdatum"
+                handleEventChange={onChangeField("startdatum")}
+              />
+            </div>
+            <div className={classes.field}>
+              <EditTextElement
+                value={formData.starttid}
+                label="Starttid"
+                placeholder="Starttid"
+                name="starttid"
+                handleEventChange={onChangeField("starttid")}
+              />
+            </div>
+            <div className={classes.field}>
+              <EditTextElement
+                value={formData.sluttid}
+                label="Sluttid"
+                placeholder="Sluttid"
+                name="sluttid"
+                handleEventChange={onChangeField("sluttid")}
+              />
+            </div>
+            <div className={classes.field}>
+              <EditTextElement
+                value={formData.ledare}
+                label="Ledare"
+                placeholder="Ledare"
+                name="ledare"
+                handleEventChange={onChangeField("ledare")}
+              />
+            </div>
           </div>
           <ButtonContainer padding="24px 0 0 0">
-            <BlueButton onClick={() => setShowAddEventModal(false)}>
-              Avbryt
-            </BlueButton>
+            <BlueButton onClick={onClose}>Avbryt</BlueButton>
             <div>&nbsp;</div>
-            <BlueButton onClick={() => alert("s")}>Skapa</BlueButton>
+            <BlueButton onClick={onCreate}>Skapa</BlueButton>
           </ButtonContainer>
         </GustavModal>
       )}
@@ -64,6 +122,10 @@ const AddNewEvent = ({
 const styles = {
   fieldContainer: {
     marginTop: "20px",
+  },
+  field: {
+    marginTop: "5px",
+    marginBottom: "5px",
   },
 };
 

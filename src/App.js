@@ -16,7 +16,6 @@ function App() {
   const [currentEvents, setCurrentEvents] = useState([]);
   const [showAddEventModal, setShowAddEventModal] = useState(false);
   const [schemaEvents, setSchemaEvents] = useState([]);
-  const [selectInfo, setSelectInfo] = useState(null);
 
   useEffect(() => {
     setSchemaEvents(getInitialSchemas());
@@ -27,7 +26,6 @@ function App() {
   };
 
   const handleDateSelect = (selectInfo) => {
-    setSelectInfo(selectInfo);
     setShowAddEventModal(selectInfo);
     // let title = prompt("Please enter a new title for your event");
     // let calendarApi = selectInfo.view.calendar;
@@ -45,9 +43,38 @@ function App() {
     // }
   };
 
+  const addEvent = (newSchema, selectInfo) => {
+    console.log("newSchema: ", newSchema);
+    console.log("selectInfo: ", selectInfo);
+    //PostData(), skapa sammankomsten, få tillbaka sammankomst obj och skapa nytt event till kalendern
+    let calendarApi = selectInfo.view.calendar;
+    calendarApi.unselect();
+    calendarApi.addEvent({
+      id: newSchema.startdatum, //Ta obj id från sammankomst obj från det som skapas i databasen
+      title: "Sammankomst - " + newSchema?.ledare,
+      start: new Date(newSchema.startdatum + "T" + newSchema.starttid),
+      end: new Date(newSchema.startdatum + "T2" + newSchema.sluttid),
+      allDay: false,
+    });
+    // setCurrentEvents([
+    //   ...schemaEvents,
+    //   {
+    //     id: newSchema?.ledare,
+    //     title: "Sammankomst - " + newSchema?.ledare?.namn,
+    //     start: new Date(newSchema.startdatum + "T" + newSchema.starttid),
+    //     end: new Date(newSchema.datum + "T2" + newSchema.sluttid),
+    //   },
+    // ]);
+    // calendarApi.addEvent({
+    //   id: newSchema?.ledare,
+    //   title: "Sammankomst - " + newSchema?.ledare?.namn,
+    //   start: new Date(newSchema.datum + "T" + newSchema.starttid),
+    //   end: new Date(newSchema.datum + "T2" + newSchema.sluttid),
+    // });
+  };
+
   const handleEventClick = (clickInfo) => {
     //EditModal
-    // clickInfo.event.remove();
   };
 
   const handleEvents = (events) => {
@@ -116,7 +143,7 @@ function App() {
           </div>
         </div>
         <AddNewEvent
-          selectInfo={selectInfo}
+          addEvent={addEvent}
           showAddEventModal={showAddEventModal}
           setShowAddEventModal={setShowAddEventModal}
         />
